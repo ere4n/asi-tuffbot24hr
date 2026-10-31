@@ -12,8 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout Public Workflow Repo
       uses: actions/checkout@v4
+
+    - name: Clone Private Repository Code
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
+      run: |
+        git clone https://x-access-token:${GH_PAT}@github.com/ere4n/asituff.git private_repo
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -24,11 +30,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install "python-telegram-bot[all]" requests
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f private_repo/requirements.txt ]; then pip install -r private_repo/requirements.txt; fi
 
-    - name: Run Script
+    - name: Run Private Script
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       run: |
-        python "dark_tuff.py"
+        python "private_repo/dark_tuff.py"
         
